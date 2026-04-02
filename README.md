@@ -6,20 +6,23 @@
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 
-**Iceberg Prompts** es una aplicación de estudio de alto rendimiento que utiliza la **IA de Google Gemini** para aplicar metodologías de aprendizaje profundo. Diseñada con una estética *Premium Dark* y optimizada bajo los estándares más estrictos de **SEO y Accesibilidad (WCAG 2.2)**.
+![Security](https://img.shields.io/badge/Security-Supply%20Chain%20Protected-green?style=for-the-badge&logo=dependabot)
+![Intelligence](https://img.shields.io/badge/Intelligence-Gemini%202.5%20Flash-vibrant?style=for-the-badge&logo=google-gemini)
+
+**Iceberg Prompts** es una aplicación de estudio de alto rendimiento que aprovecha el **Intelligence Core™ de Google Gemini (v2.5)** para aplicar metodologías de aprendizaje profundo. Diseñada con una estética *Premium Dark* y blindada con protocolos de seguridad de vanguardia.
 
 ---
 
 ## ✨ Características Principales
 
 *   **🧠 Metodología Iceberg**: 7 acciones críticas para pasar del entendimiento superficial a la maestría.
-    *   *Nivel 1 (Estudiar)*: Outline, Cornell, Feynman.
-    *   *Nivel 2 (Repasar)*: Quiz interactivo, Flashcards inteligentes.
-    *   *Nivel 3 (Retener)*: Planificación 2-3-5-7, Test de Retención profunda.
+*   **⚡ Intelligence Core™**: Integración optimizada con la serie **Gemini 2.5 Flash**, garantizando respuestas precisas y latencia mínima.
+*   **🛡️ Seguridad de Élite**:
+    *   **Supply Chain Protection**: Configuración `.npmrc` estricta para evitar malware en dependencias.
+    *   **Zero Server-Side**: Procesamiento 100% en cliente; tu API Key nunca toca un servidor externo.
 *   **💎 Estética Premium**: Interfaz basada en *Glassmorphism*, con desenfoques de fondo dinámicos y micro-animaciones suaves.
-*   **♿ Accesibilidad 100/100**: Cumplimiento total de roles ARIA, navegación por teclado mejorada y tamaños de objetivos táctiles optimizados (WCAG 2.5.8).
-*   **🚀 Rendimiento Local**: Sin backend. Conexión directa y segura con la API de Gemini desde el navegador con persistencia en `localStorage`.
-*   **📄 Exportación Profesional**: Descarga tus lecciones y esquemas en formato **Markdown (.md)** o prepáralos para impresión en **PDF**.
+*   **♿ Accesibilidad 100/100**: Cumplimiento total de roles ARIA y estándares WCAG 2.2.
+*   **📄 Exportación Profesional**: Descarga tus lecciones en formato **Markdown (.md)** de alta fidelidad.
 
 ---
 
