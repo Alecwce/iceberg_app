@@ -15,6 +15,7 @@ import PromptLibrary from "./components/PromptLibrary";
 
 export default function App() {
   const [apiKey, setApiKey] = useLocalStorage("iceberg-apiKey", "");
+  const [model, setModel] = useLocalStorage("iceberg-model", "gemini-2.5-flash");
   const [showKey, setShowKey] = useState(false);
   const [topic, setTopic] = useLocalStorage("iceberg-topic", "");
   const [content, setContent] = useLocalStorage("iceberg-content", "");
@@ -22,7 +23,7 @@ export default function App() {
   const [activeGroup, setActiveGroup] = useState(0);
   const [view, setView] = useState("app");
   const [mounted, setMounted] = useState(false);
-  
+
   useEffect(() => { setMounted(true); }, []);
 
   const { generate, loading: generating } = useGemini();
@@ -46,61 +47,24 @@ export default function App() {
     const userPrompt = action.ai.build({ topic, content });
     return await generate({
       apiKey,
+      model,
       systemPrompt: action.ai.system,
       userPrompt
     });
   };
 
-  const obsidianBG = "#050505";
-  const goldAccent = "#d4af37";
-  const softGold = "rgba(212, 175, 55, 0.45)";
-
   return (
-    <main role="main" style={{
-      minHeight: "100vh",
-      background: obsidianBG,
-      backgroundAttachment: "fixed",
-      backgroundImage: `
-        radial-gradient(circle at 50% -10%, rgba(212,175,55,0.08) 0%, transparent 70%),
-        radial-gradient(circle at 0% 100%, rgba(212,175,55,0.03) 0%, transparent 40%),
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E")
-      `,
-      color: "#f0e6d2",
-      fontFamily: "'Inter', sans-serif",
-      overflowX: "hidden",
-      opacity: mounted ? 1 : 0,
-      transition: "opacity 1s ease-in-out"
-    }}>
-      <style>{`
-        @keyframes reveal { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .stagger-1 { animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .stagger-2 { animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards; opacity: 0; }
-        .stagger-3 { animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards; opacity: 0; }
-        input, textarea { border-color: rgba(212,175,55,0.15) !important; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important; }
-        input:focus, textarea:focus { border-color: ${goldAccent}88 !important; box-shadow: 0 0 15px ${goldAccent}22 !important; background: rgba(0,0,0,0.6) !important; }
-        .glass-panel { background: rgba(15,15,15,0.7); backdrop-filter: blur(15px); border: 1px solid rgba(212,175,55,0.12); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-      `}</style>
-
+    <main role="main" className="app-container" style={{ opacity: mounted ? 1 : 0, transition: "opacity 1s ease-in-out" }}>
       <div className="stagger-1">
-        <Header />
+        <Header activeModel={model} />
       </div>
 
-      <nav className="stagger-2" style={{ display: "flex", justifyContent: "center", gap: "30px", marginBottom: "30px" }}>
+      <nav className="view-nav stagger-2">
         {['app', 'prompts'].map(v => (
           <button
             key={v}
+            className={`nav-btn ${view === v ? 'active' : ''}`}
             onClick={() => setView(v)}
-            style={{
-              background: "none", border: "none",
-              color: view === v ? goldAccent : "#5a4a3a",
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "10px", fontWeight: "bold", letterSpacing: "0.25em",
-              cursor: "pointer", padding: "10px 0",
-              borderBottom: `2px solid ${view === v ? goldAccent : "transparent"}`,
-              transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-              textTransform: "uppercase"
-            }}
           >
             {v === 'app' ? "Instrumental" : "Conocimiento"}
           </button>
@@ -108,85 +72,66 @@ export default function App() {
       </nav>
 
       {view === "app" ? (
-        <div style={{ maxWidth: "680px", margin: "0 auto", padding: "0 20px" }}>
+        <div className="main-content">
           
-          {/* Key Area */}
-          <section className="glass-panel stagger-3" style={{ padding: "24px", borderRadius: "20px", marginBottom: "20px" }}>
-             <h4 style={{ 
-               fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", color: goldAccent, 
-               margin: "0 0 16px", textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.7 
-             }}>Secret Key Entry</h4>
+          {/* Key & Model Area */}
+          <section className="glass-panel key-section stagger-3" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 200px', gap: '16px', alignItems: 'end' }}>
+             <div>
+               <h4 className="section-label">Secret Key Entry</h4>
+               <div className="input-group">
+                 <input
+                   type={showKey ? "text" : "password"}
+                   value={apiKey}
+                   onChange={e => setApiKey(e.target.value)}
+                   placeholder="Enter Gemini API Key..."
+                   className="input-standard mono"
+                 />
+                 <button onClick={() => setShowKey(!showKey)} className="toggle-btn">
+                   {showKey ? "◈" : "◇"}
+                 </button>
+               </div>
+             </div>
              
-             <div style={{ position: "relative" }}>
-               <input
-                 type={showKey ? "text" : "password"}
-                 value={apiKey}
-                 onChange={e => setApiKey(e.target.value)}
-                 placeholder="Enter Gemini API Key..."
-                 style={{
-                   width: "100%", background: "rgba(0,0,0,0.4)", padding: "16px 50px 16px 18px",
-                   borderRadius: "12px", border: "1px solid", color: goldAccent,
-                   fontFamily: "'JetBrains Mono', monospace", fontSize: "13px"
-                 }}
-               />
-               <button
-                 onClick={() => setShowKey(!showKey)}
-                 style={{
-                   position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)",
-                   background: "none", border: "none", cursor: "pointer", fontSize: "18px", opacity: 0.6
-                 }}
-               >{showKey ? "◈" : "◇"}</button>
+             <div>
+               <h4 className="section-label">Intelligence Core</h4>
+               <select 
+                 className="input-standard mono" 
+                 value={model} 
+                 onChange={e => setModel(e.target.value)}
+                 style={{ height: '44px', width: '100%', cursor: 'pointer' }}
+               >
+                 <option value="gemini-2.5-flash">Gemini 2.5 Flash (Recommended)</option>
+                 <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite (Fastest)</option>
+                 <option value="gemini-2.5-pro">Gemini 2.5 Pro (Powerful)</option>
+                 <option value="gemini-2.0-flash">Gemini 2.0 Flash (Stable)</option>
+               </select>
              </div>
           </section>
 
           {/* Form Area */}
-          <section className="glass-panel stagger-3" style={{ 
-            padding: "24px", borderRadius: "20px", marginBottom: "30px",
-            border: `1px solid ${topic ? goldAccent + '33' : 'rgba(212,175,55,0.12)'}`
+          <section className="glass-panel form-section stagger-3" style={{ 
+            borderColor: topic ? 'rgba(212,175,55,0.3)' : 'var(--glass-border)'
           }}>
-             <div style={{ marginBottom: "20px" }}>
-               <label style={{ 
-                 fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", color: "#5a4a3a", 
-                 display: "block", marginBottom: "10px", letterSpacing: "0.15em" 
-               }}>TEMA DE INVESTIGACIÓN</label>
-               <div style={{ display: "flex", gap: "12px" }}>
+             <div className="topic-area">
+               <label className="section-label">TEMA DE INVESTIGACIÓN</label>
+               <div className="topic-input-row">
                  <input
                    value={topic}
                    onChange={e => setTopic(e.target.value)}
                    placeholder="ej: Mecánica Cuántica..."
-                   style={{
-                     flex: 1, background: "rgba(0,0,0,0.3)", padding: "16px 20px",
-                     borderRadius: "12px", border: "1px solid", color: "#f0e6d2",
-                     fontFamily: "'Playfair Display', serif", fontSize: "18px", fontStyle: "italic"
-                   }}
+                   className="topic-input"
                  />
                  <button
+                   className={`favorite-btn ${isFavorite(topic) ? 'active' : ''}`}
                    onClick={() => topic && (isFavorite(topic) ? removeFavorite(favorites.find(f => f.topic === topic)?.id) : addFavorite(topic, content))}
-                   style={{
-                     background: isFavorite(topic) ? goldAccent : "rgba(255,255,255,0.03)",
-                     borderRadius: "12px", width: "56px", border: `1px solid ${goldAccent}33`,
-                     color: isFavorite(topic) ? "#000" : goldAccent, cursor: "pointer",
-                     fontSize: "20px", transition: "all 0.3s"
-                   }}
                  >
                    {isFavorite(topic) ? "★" : "☆"}
                  </button>
                </div>
              </div>
 
-             <button
-               onClick={() => setShowContent(!showContent)}
-               style={{
-                 width: "100%", background: "none", border: `1px dashed ${goldAccent}33`,
-                 padding: "16px", borderRadius: "12px", color: "#8a7a6a",
-                 fontFamily: "'JetBrains Mono', monospace", fontSize: "10px",
-                 cursor: "pointer", display: "flex", alignItems: "center", gap: "12px",
-                 transition: "all 0.3s"
-               }}
-               onMouseOver={e => e.currentTarget.style.borderColor = goldAccent}
-               onMouseOut={e => e.currentTarget.style.borderColor = goldAccent + '33'}
-             >
-               <span style={{ transform: showContent ? "rotate(90deg)" : "none", transition: "0.3s" }}>▶</span>
+             <button className="expand-trigger" onClick={() => setShowContent(!showContent)}>
+               <span className={`arrow ${showContent ? 'open' : ''}`}>▶</span>
                {showContent ? "RESUMIR ÁREA DE TRABAJO" : "EXPANDIR FUENTES DE DATOS (OPCIONAL)"}
              </button>
 
@@ -196,30 +141,19 @@ export default function App() {
                  onChange={e => setContent(e.target.value)}
                  placeholder="Vuelca tus apuntes, transcripciones o fragmentos de lectura aquí..."
                  rows={10}
-                 style={{
-                   width: "100%", background: "rgba(0,0,0,0.35)", padding: "20px",
-                   borderRadius: "12px", border: "1px solid", color: "#a89a7a",
-                   marginTop: "16px", fontFamily: "'Inter', sans-serif", fontSize: "13px",
-                   lineHeight: "1.8", animation: "reveal 0.4s ease-out"
-                 }}
+                 className="content-textarea stagger-reveal"
                />
              )}
           </section>
 
           {/* Nav Tabs */}
-          <div role="tablist" style={{ display: "flex", gap: "10px", padding: "0 10px" }}>
+          <div role="tablist" className="tabs-container">
             {LEVEL_GROUPS.map((g, i) => (
               <button
                 key={i}
                 aria-selected={activeGroup === i}
                 onClick={() => setActiveGroup(i)}
-                style={{
-                  flex: 1, padding: "16px 8px", background: activeGroup === i ? "rgba(212,175,55,0.06)" : "transparent",
-                  border: "none", borderBottom: `3px solid ${activeGroup === i ? goldAccent : "transparent"}`,
-                  color: activeGroup === i ? "#f0e6d2" : "#5a4a3a", cursor: "pointer",
-                  fontFamily: "'JetBrains Mono', monospace", fontSize: "9px",
-                  letterSpacing: "0.15em", transition: "0.4s"
-                }}
+                className={`tab-btn ${activeGroup === i ? 'active' : ''}`}
               >
                 {g.label.toUpperCase()}
               </button>
@@ -227,34 +161,28 @@ export default function App() {
           </div>
 
           {/* Action List */}
-          <div style={{ 
-            background: "rgba(10,10,10,0.4)", border: "1px solid rgba(212,175,55,0.08)",
-            borderRadius: "0 0 24px 24px", padding: "24px 20px 40px", marginBottom: "40px"
-          }}>
-            <h5 style={{ 
-               fontFamily: "'JetBrains Mono', monospace", fontSize: "8px", color: goldAccent,
-               opacity: 0.5, letterSpacing: "0.3em", marginBottom: "24px"
-            }}>PROTOCOLOS DISPONIBLES : {groupActions.length}</h5>
+          <div className="actions-list glass-panel">
+            <h5 className="actions-header mono">
+              PROTOCOLOS DISPONIBLES : {groupActions.length}
+            </h5>
             
-            {groupActions.map((a, i) => (
-              <ActionCard 
-                key={a.id} action={a} topic={topic} content={content} apiKey={apiKey}
-                onGenerate={handleGenerate} onHistoryAdd={addEntry} 
-              />
-            ))}
+            <div className="action-grid">
+              {groupActions.map((a) => (
+                <ActionCard 
+                  key={a.id} action={a} topic={topic} content={content} apiKey={apiKey}
+                  onGenerate={handleGenerate} onHistoryAdd={addEntry} 
+                />
+              ))}
+            </div>
           </div>
         </div>
       ) : (
         <PromptLibrary />
       )}
 
-      {/* Footer Details */}
-      <footer style={{
-        maxWidth: "680px", margin: "40px auto", textAlign: "center",
-        paddingBottom: "60px", opacity: 0.4
-      }}>
-         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", letterSpacing: "0.1em" }}>
-           ESTÉTICA OBSIDIAN & GOLD · 100/100 LIGHTHOUSE · MAESTRÍA IA
+      <footer className="footer-info">
+         <p className="mono">
+           ESTÉTICA OBSIDIAN & GOLD · MAESTRÍA IA · REFINED DARKNESS
          </p>
       </footer>
 
