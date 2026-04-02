@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function ResultBlock({ text, color = "#f59e0b", topic = "" }) {
+export default function ResultBlock({ text, color = "#d4af37", topic = "" }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -25,9 +25,10 @@ export default function ResultBlock({ text, color = "#f59e0b", topic = "" }) {
       <html>
         <head>
           <style>
-            body { font-family: Georgia, serif; padding: 40px; max-width: 800px; margin: 0 auto; background: #fff; color: #000; }
-            h1 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-            pre { white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #111; }
+            @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;600&display=swap');
+            body { font-family: 'Inter', sans-serif; padding: 50px; max-width: 900px; margin: 0 auto; background: #fff; color: #1a1a1a; line-height: 1.8; }
+            h1 { font-family: 'Playfair Display', serif; font-size: 32px; color: #000; border-bottom: 3px solid #d4af37; padding-bottom: 15px; margin-bottom: 30px; letter-spacing: -0.01em; }
+            pre { white-space: pre-wrap; font-size: 14px; color: #333; background: #f9f9f9; padding: 25px; border-radius: 12px; border: 1px solid #eee; }
           </style>
         </head>
         <body>
@@ -43,82 +44,75 @@ export default function ResultBlock({ text, color = "#f59e0b", topic = "" }) {
   };
 
   return (
-    <div style={{ marginTop: "16px", animation: "fadeIn 0.4s ease-out" }}>
+    <div style={{ marginTop: "20px", animation: "reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1)" }}>
       <div style={{
-        background: "rgba(0,0,0,0.55)",
-        backdropFilter: "blur(10px)",
-        border: `1px solid ${color}33`,
-        borderRadius: "12px",
-        padding: "20px",
-        fontFamily: "Georgia, serif",
-        fontSize: "13.5px",
-        color: "#dcd2b0",
-        lineHeight: "1.95",
+        background: "rgba(0,0,0,0.45)",
+        backdropFilter: "blur(20px)",
+        border: `1px solid rgba(212, 175, 55, 0.15)`,
+        borderRadius: "16px",
+        padding: "24px",
+        fontFamily: "'Inter', sans-serif",
+        fontSize: "14px",
+        color: "#f0e6d2",
+        lineHeight: "2.0",
         whiteSpace: "pre-wrap",
-        maxHeight: "480px",
+        maxHeight: "520px",
         overflowY: "auto",
-        boxShadow: "inset 0 0 25px rgba(0,0,0,0.4)",
+        boxShadow: "inset 0 0 40px rgba(0,0,0,0.4)",
+        fontWeight: "300",
+        letterSpacing: "0.01em"
       }}>
         {text}
       </div>
-      <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "12px" }}>
+      
+      <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "16px" }}>
+        {[
+          { label: "MD", action: handleDownloadMarkdown, aria: "Descargar Markdown" },
+          { label: "PDF", action: handleDownloadPDF, aria: "Imprimir PDF" }
+        ].map(btn => (
+          <button
+            key={btn.label}
+            aria-label={btn.aria}
+            onClick={btn.action}
+            style={{
+              background: "rgba(212, 175, 55, 0.04)",
+              border: "1px solid rgba(212, 175, 55, 0.12)",
+              color: "rgba(212, 175, 55, 0.5)",
+              padding: "10px 18px",
+              borderRadius: "10px",
+              fontSize: "11px",
+              cursor: "pointer",
+              fontFamily: "'JetBrains Mono', monospace",
+              letterSpacing: "0.15em",
+              minHeight: "40px",
+              transition: "all 0.3s"
+            }}
+            onMouseOver={e => (e.currentTarget.style.color = "#d4af37", e.currentTarget.style.borderColor = "#d4af3744")}
+            onMouseOut={e => (e.currentTarget.style.color = "rgba(212, 175, 55, 0.5)", e.currentTarget.style.borderColor = "rgba(212, 175, 55, 0.12)")}
+          >
+            {btn.label}
+          </button>
+        ))}
+        
         <button
-          aria-label="Descargar como Markdown"
-          onClick={handleDownloadMarkdown}
-          style={{
-            background: "rgba(180,130,40,0.06)",
-            border: "1px solid rgba(180,150,80,0.15)",
-            color: "#8a7a5a",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            fontSize: "11px",
-            cursor: "pointer",
-            fontFamily: "'DM Mono', monospace",
-            letterSpacing: "0.1em",
-            minHeight: "36px",
-            transition: "all 0.2s",
-          }}
-        >
-          MD
-        </button>
-        <button
-          aria-label="Imprimir o guardar como PDF"
-          onClick={handleDownloadPDF}
-          style={{
-            background: "rgba(180,130,40,0.06)",
-            border: "1px solid rgba(180,150,80,0.15)",
-            color: "#8a7a5a",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            fontSize: "11px",
-            cursor: "pointer",
-            fontFamily: "'DM Mono', monospace",
-            letterSpacing: "0.1em",
-            minHeight: "36px",
-            transition: "all 0.2s",
-          }}
-        >
-          PDF
-        </button>
-        <button
-          aria-label="Copiar resultado"
           onClick={handleCopy}
           style={{
-            background: copied ? "rgba(52,211,153,0.15)" : "rgba(180,130,40,0.1)",
-            border: `1px solid ${copied ? "#34d399" : "rgba(180,150,80,0.25)"}`,
-            color: copied ? "#6ee7b7" : "#a89a78",
-            padding: "8px 20px",
-            borderRadius: "8px",
+            background: copied ? "rgba(16, 185, 129, 0.1)" : "rgba(212, 175, 55, 0.08)",
+            border: `1px solid ${copied ? "#10b981" : "rgba(212, 175, 55, 0.2)"}`,
+            color: copied ? "#10b981" : "#d4af37",
+            padding: "10px 24px",
+            borderRadius: "10px",
             fontSize: "11px",
             cursor: "pointer",
-            fontFamily: "'DM Mono', monospace",
-            letterSpacing: "0.12em",
-            minHeight: "36px",
-            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-            boxShadow: copied ? "0 0 10px rgba(52,211,153,0.2)" : "none",
+            fontFamily: "'JetBrains Mono', monospace",
+            letterSpacing: "0.15em",
+            minHeight: "40px",
+            fontWeight: "700",
+            transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+            boxShadow: copied ? "0 0 20px rgba(16, 185, 129, 0.2)" : "none"
           }}
         >
-          {copied ? "✓ COPIADO" : "COPIAR"}
+          {copied ? "✓ COPIADO" : "CAPTURAR RESULTADO"}
         </button>
       </div>
     </div>
