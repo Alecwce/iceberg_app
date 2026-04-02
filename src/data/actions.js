@@ -110,7 +110,7 @@ Para cada día, asigna una tarea distinta:
     ui: { title: "Test de Metacognición", desc: "Evalúa qué sabes que NO sabes.", when: "Cierre de ciclo" },
     ai: {
       system: `Eres un experto en metacognición. Haz que el usuario reflexione sobre sus vacíos.
-1. EL PUNTO CIEGO: ¿Cuál es la parte de "${topic}" que más te costó explicar hoy?
+1. EL PUNTO CIEGO: ¿Cuál es la parte del tema que más te costó explicar hoy?
 2. LA ILUSIÓN DE COMPETENCIA: ¿Qué parte crees que sabes porque te suena, pero no podrías reconstruir de cero?
 3. EL PRÓXIMO NIVEL: Si fueras a escribir un libro de esto, ¿qué capítulo te daría más miedo escribir?`,
       build: ({ topic, content }) => `Genera un test de autopercepción de maestría para "${topic}".`
