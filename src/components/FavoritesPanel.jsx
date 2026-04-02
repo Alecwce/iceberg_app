@@ -1,5 +1,27 @@
 import React, { useState } from "react";
 
+const W = {
+  face:    "#d4d0c8",
+  shadow:  "#808080",
+  dkShadow:"#404040",
+  hilight: "#ffffff",
+  btnText: "#000000",
+  selBlue: "#0a246a",
+  selText: "#ffffff",
+};
+
+const winBtn = {
+  background: W.face,
+  border: "2px solid",
+  borderColor: `${W.hilight} ${W.dkShadow} ${W.dkShadow} ${W.hilight}`,
+  fontFamily: "Tahoma, 'MS Sans Serif', Arial, sans-serif",
+  fontSize: "11px",
+  color: W.btnText,
+  padding: "3px 12px",
+  cursor: "pointer",
+  minHeight: "23px",
+};
+
 export default function FavoritesPanel({ favorites, onRemove, onRestore }) {
   const [visible, setVisible] = useState(false);
 
@@ -8,69 +30,132 @@ export default function FavoritesPanel({ favorites, onRemove, onRestore }) {
       <button
         onClick={() => setVisible(true)}
         style={{
-          position: "fixed", bottom: "20px", right: "170px",
-          background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.2)",
-          color: "#34d399", padding: "10px 16px", borderRadius: "8px",
-          fontFamily: "'DM Mono', monospace", fontSize: "11px", cursor: "pointer",
+          ...winBtn,
+          position: "fixed",
+          bottom: "16px",
+          right: "160px",
+          padding: "4px 12px",
+          fontWeight: "bold",
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
         }}
       >
-        ⭐ Favoritos ({favorites.length})
+        ★ Favoritos ({favorites.length})
       </button>
     );
   }
 
   return (
     <div style={{
-      position: "fixed", bottom: "20px", right: "170px",
-      background: "rgba(18,16,10,0.95)", border: "1px solid rgba(52,211,153,0.2)",
-      borderRadius: "12px", padding: "16px", width: "320px", maxHeight: "400px",
-      overflow: "auto",
+      position: "fixed",
+      bottom: "16px",
+      right: "160px",
+      background: W.face,
+      border: "2px solid",
+      borderColor: `${W.hilight} ${W.dkShadow} ${W.dkShadow} ${W.hilight}`,
+      width: "300px",
+      boxShadow: "4px 4px 8px rgba(0,0,0,0.5)",
+      zIndex: 1000,
     }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
-        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#34d399" }}>
-          ⭐ FAVORITOS
-        </span>
+      {/* Title bar */}
+      <div style={{
+        background: `linear-gradient(180deg, #0a246a 0%, #3a6ea5 100%)`,
+        color: "#fff",
+        padding: "3px 6px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        fontSize: "11px",
+        fontFamily: "Tahoma, Arial, sans-serif",
+        fontWeight: "bold",
+        userSelect: "none",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <span>★</span> Temas Favoritos
+        </div>
         <button
           onClick={() => setVisible(false)}
-          style={{ background: "none", border: "none", color: "#5a4a2a", cursor: "pointer" }}
+          style={{
+            width: "16px", height: "14px",
+            background: "linear-gradient(180deg, #d0d0d0 0%, #a0a0a0 100%)",
+            border: "1px solid #000",
+            borderTopColor: "#fff",
+            borderLeftColor: "#fff",
+            color: "#000",
+            fontSize: "9px",
+            fontFamily: "Tahoma, Arial, sans-serif",
+            cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: 0,
+          }}
         >✕</button>
       </div>
 
-      {favorites.length === 0 ? (
-        <p style={{ color: "#6a5a38", fontSize: "12px", textAlign: "center" }}>
-          Sin favoritos aún
-        </p>
-      ) : (
-        favorites.map(entry => (
-          <div
-            key={entry.id}
-            style={{
-              padding: "10px", marginBottom: "8px",
-              background: "rgba(0,0,0,0.3)", borderRadius: "6px",
-              display: "flex", justifyContent: "space-between", alignItems: "center",
-            }}
-          >
-            <div
-              style={{ cursor: "pointer", flex: 1 }}
-              onClick={() => onRestore?.(entry)}
-            >
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", color: "#f0d898" }}>
-                {entry.topic}
-              </div>
-              <div style={{ fontSize: "10px", color: "#6a5a38", marginTop: "4px" }}>
-                {new Date(entry.addedAt).toLocaleDateString()}
-              </div>
-            </div>
-            <button
-              onClick={() => onRemove(entry.id)}
-              style={{
-                background: "none", border: "none", color: "#f87171",
-                cursor: "pointer", fontSize: "14px", padding: "4px",
-              }}
-            >✕</button>
+      {/* Content */}
+      <div style={{ padding: "6px" }}>
+        {favorites.length === 0 ? (
+          <div style={{
+            padding: "16px",
+            textAlign: "center",
+            color: W.shadow,
+            fontSize: "11px",
+            fontFamily: "Tahoma, Arial, sans-serif",
+          }}>
+            Sin favoritos aún.
           </div>
-        ))
-      )}
+        ) : (
+          <div style={{
+            background: "#fff",
+            border: "2px solid",
+            borderColor: `${W.dkShadow} ${W.hilight} ${W.hilight} ${W.dkShadow}`,
+            maxHeight: "280px",
+            overflowY: "auto",
+          }}>
+            {favorites.map((entry, i) => (
+              <div
+                key={entry.id}
+                style={{
+                  padding: "4px 8px",
+                  borderBottom: i < favorites.length - 1 ? "1px solid #d4d0c8" : "none",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  fontFamily: "Tahoma, Arial, sans-serif",
+                  fontSize: "11px",
+                }}
+              >
+                <div
+                  style={{ cursor: "pointer", flex: 1 }}
+                  onClick={() => onRestore?.(entry)}
+                  onMouseOver={e => { e.currentTarget.parentElement.style.background = W.selBlue; e.currentTarget.parentElement.style.color = W.selText; }}
+                  onMouseOut={e => { e.currentTarget.parentElement.style.background = "transparent"; e.currentTarget.parentElement.style.color = "#000"; }}
+                >
+                  <div style={{ fontWeight: "bold" }}>{entry.topic}</div>
+                  <div style={{ fontSize: "10px", color: W.shadow }}>
+                    {new Date(entry.addedAt).toLocaleDateString()}
+                  </div>
+                </div>
+                <button
+                  onClick={() => onRemove(entry.id)}
+                  title="Eliminar favorito"
+                  style={{
+                    background: W.face,
+                    border: "2px solid",
+                    borderColor: `${W.hilight} ${W.dkShadow} ${W.dkShadow} ${W.hilight}`,
+                    color: "#cc0000",
+                    cursor: "pointer",
+                    fontSize: "10px",
+                    padding: "1px 6px",
+                    fontFamily: "Tahoma, Arial, sans-serif",
+                    flexShrink: 0,
+                  }}
+                >✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

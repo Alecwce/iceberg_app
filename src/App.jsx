@@ -13,6 +13,47 @@ import FavoritesPanel from "./components/FavoritesPanel";
 import ToastContainer from "./components/ToastContainer";
 import PromptLibrary from "./components/PromptLibrary";
 
+// Win2K color palette
+const W = {
+  face:    "#d4d0c8",
+  shadow:  "#808080",
+  dkShadow:"#404040",
+  hilight: "#ffffff",
+  btnHi:   "#ece9d8",
+  btnText: "#000000",
+  blue:    "#000080",
+  selBlue: "#0a246a",
+  selText: "#ffffff",
+  inset:   "#ffffff",
+  border:  "#808080",
+};
+
+// Reusable Win2K raised box
+const raised = {
+  background: W.face,
+  border: `2px solid`,
+  borderColor: `${W.hilight} ${W.dkShadow} ${W.dkShadow} ${W.hilight}`,
+  outline: `1px solid ${W.shadow}`,
+  outlineOffset: "-2px",
+};
+
+const sunken = {
+  background: W.inset,
+  border: `2px solid`,
+  borderColor: `${W.dkShadow} ${W.hilight} ${W.hilight} ${W.dkShadow}`,
+};
+
+const winBtn = {
+  ...raised,
+  fontFamily: "Tahoma, 'MS Sans Serif', Arial, sans-serif",
+  fontSize: "11px",
+  color: W.btnText,
+  padding: "3px 12px",
+  cursor: "pointer",
+  minHeight: "23px",
+  userSelect: "none",
+};
+
 export default function App() {
   const [apiKey, setApiKey] = useLocalStorage("iceberg-apiKey", "");
   const [showKey, setShowKey] = useState(false);
@@ -22,7 +63,7 @@ export default function App() {
   const [activeGroup, setActiveGroup] = useState(0);
   const [view, setView] = useState("app");
   const [mounted, setMounted] = useState(false);
-  
+
   useEffect(() => { setMounted(true); }, []);
 
   const { generate, loading: generating } = useGemini();
@@ -51,212 +92,337 @@ export default function App() {
     });
   };
 
-  const obsidianBG = "#050505";
-  const goldAccent = "#d4af37";
-  const softGold = "rgba(212, 175, 55, 0.45)";
-
   return (
     <main role="main" style={{
       minHeight: "100vh",
-      background: obsidianBG,
-      backgroundAttachment: "fixed",
-      backgroundImage: `
-        radial-gradient(circle at 50% -10%, rgba(212,175,55,0.08) 0%, transparent 70%),
-        radial-gradient(circle at 0% 100%, rgba(212,175,55,0.03) 0%, transparent 40%),
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E")
-      `,
-      color: "#f0e6d2",
-      fontFamily: "'Inter', sans-serif",
-      overflowX: "hidden",
+      background: W.face,
+      fontFamily: "Tahoma, 'MS Sans Serif', Arial, sans-serif",
+      fontSize: "11px",
+      color: W.btnText,
       opacity: mounted ? 1 : 0,
-      transition: "opacity 1s ease-in-out"
+      transition: "opacity 0.3s",
     }}>
       <style>{`
-        @keyframes reveal { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .stagger-1 { animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .stagger-2 { animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards; opacity: 0; }
-        .stagger-3 { animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards; opacity: 0; }
-        input, textarea { border-color: rgba(212,175,55,0.15) !important; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important; }
-        input:focus, textarea:focus { border-color: ${goldAccent}88 !important; box-shadow: 0 0 15px ${goldAccent}22 !important; background: rgba(0,0,0,0.6) !important; }
-        .glass-panel { background: rgba(15,15,15,0.7); backdrop-filter: blur(15px); border: 1px solid rgba(212,175,55,0.12); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #3a6ea5 !important; }
+        input, textarea, select {
+          font-family: Tahoma, 'MS Sans Serif', Arial, sans-serif;
+          font-size: 11px;
+        }
+        input:focus, textarea:focus {
+          outline: 1px dotted #000 !important;
+          outline-offset: -2px !important;
+        }
+        ::-webkit-scrollbar { width: 16px; height: 16px; }
+        ::-webkit-scrollbar-track { background: #d4d0c8; }
+        ::-webkit-scrollbar-thumb {
+          background: #d4d0c8;
+          border: 2px solid;
+          border-color: #fff #808080 #808080 #fff;
+        }
+        ::-webkit-scrollbar-button {
+          background: #d4d0c8;
+          border: 2px solid;
+          border-color: #fff #808080 #808080 #fff;
+          height: 16px;
+          width: 16px;
+        }
+        .win-tab { 
+          background: #d4d0c8; 
+          border: 2px solid;
+          border-color: #fff #808080 transparent #fff;
+          padding: 3px 12px 4px;
+          font-family: Tahoma, Arial, sans-serif;
+          font-size: 11px;
+          cursor: pointer;
+          position: relative;
+          top: 2px;
+          margin-right: 2px;
+        }
+        .win-tab.active {
+          background: #d4d0c8;
+          border-bottom-color: #d4d0c8;
+          font-weight: bold;
+          z-index: 1;
+        }
+        .win-tab:not(.active) {
+          background: #bab8b0;
+          top: 4px;
+        }
+        .win-nav-btn {
+          background: #d4d0c8;
+          border: 2px solid;
+          border-color: #fff #808080 #808080 #fff;
+          padding: 3px 20px;
+          font-family: Tahoma, Arial, sans-serif;
+          font-size: 11px;
+          cursor: pointer;
+          margin-right: 4px;
+        }
+        .win-nav-btn.active {
+          border-color: #808080 #fff #fff #808080;
+          background: #bab8b0;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
       `}</style>
 
-      <div className="stagger-1">
-        <Header />
-      </div>
+      <Header />
 
-      <nav className="stagger-2" style={{ display: "flex", justifyContent: "center", gap: "30px", marginBottom: "30px" }}>
-        {['app', 'prompts'].map(v => (
-          <button
-            key={v}
-            onClick={() => setView(v)}
-            style={{
-              background: "none", border: "none",
-              color: view === v ? goldAccent : "#5a4a3a",
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "10px", fontWeight: "bold", letterSpacing: "0.25em",
-              cursor: "pointer", padding: "10px 0",
-              borderBottom: `2px solid ${view === v ? goldAccent : "transparent"}`,
-              transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-              textTransform: "uppercase"
-            }}
-          >
-            {v === 'app' ? "Instrumental" : "Conocimiento"}
-          </button>
-        ))}
-      </nav>
+      {/* Desktop "Window" container */}
+      <div style={{
+        maxWidth: "700px",
+        margin: "12px auto",
+        padding: "0 8px 20px",
+      }}>
 
-      {view === "app" ? (
-        <div style={{ maxWidth: "680px", margin: "0 auto", padding: "0 20px" }}>
-          
-          {/* Key Area */}
-          <section className="glass-panel stagger-3" style={{ padding: "24px", borderRadius: "20px", marginBottom: "20px" }}>
-             <h4 style={{ 
-               fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", color: goldAccent, 
-               margin: "0 0 16px", textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.7 
-             }}>Secret Key Entry</h4>
-             
-             <div style={{ position: "relative" }}>
-               <input
-                 type={showKey ? "text" : "password"}
-                 value={apiKey}
-                 onChange={e => setApiKey(e.target.value)}
-                 placeholder="Enter Gemini API Key..."
-                 style={{
-                   width: "100%", background: "rgba(0,0,0,0.4)", padding: "16px 50px 16px 18px",
-                   borderRadius: "12px", border: "1px solid", color: goldAccent,
-                   fontFamily: "'JetBrains Mono', monospace", fontSize: "13px"
-                 }}
-               />
-               <button
-                 onClick={() => setShowKey(!showKey)}
-                 style={{
-                   position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)",
-                   background: "none", border: "none", cursor: "pointer", fontSize: "18px", opacity: 0.6
-                 }}
-               >{showKey ? "◈" : "◇"}</button>
-             </div>
-          </section>
+        {/* Navigation Buttons (like old-style toolbar) */}
+        <div style={{
+          ...raised,
+          padding: "4px 8px",
+          marginBottom: "8px",
+          display: "flex",
+          alignItems: "center",
+          gap: "4px",
+        }}>
+          <span style={{ fontSize: "11px", marginRight: "8px", color: "#444" }}>Ver:</span>
+          {[
+            { key: 'app', label: 'Instrumental' },
+            { key: 'prompts', label: 'Conocimiento' }
+          ].map(v => (
+            <button
+              key={v.key}
+              className={`win-nav-btn${view === v.key ? " active" : ""}`}
+              onClick={() => setView(v.key)}
+            >
+              {v.label}
+            </button>
+          ))}
+        </div>
 
-          {/* Form Area */}
-          <section className="glass-panel stagger-3" style={{ 
-            padding: "24px", borderRadius: "20px", marginBottom: "30px",
-            border: `1px solid ${topic ? goldAccent + '33' : 'rgba(212,175,55,0.12)'}`
-          }}>
-             <div style={{ marginBottom: "20px" }}>
-               <label style={{ 
-                 fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", color: "#5a4a3a", 
-                 display: "block", marginBottom: "10px", letterSpacing: "0.15em" 
-               }}>TEMA DE INVESTIGACIÓN</label>
-               <div style={{ display: "flex", gap: "12px" }}>
-                 <input
-                   value={topic}
-                   onChange={e => setTopic(e.target.value)}
-                   placeholder="ej: Mecánica Cuántica..."
-                   style={{
-                     flex: 1, background: "rgba(0,0,0,0.3)", padding: "16px 20px",
-                     borderRadius: "12px", border: "1px solid", color: "#f0e6d2",
-                     fontFamily: "'Playfair Display', serif", fontSize: "18px", fontStyle: "italic"
-                   }}
-                 />
-                 <button
-                   onClick={() => topic && (isFavorite(topic) ? removeFavorite(favorites.find(f => f.topic === topic)?.id) : addFavorite(topic, content))}
-                   style={{
-                     background: isFavorite(topic) ? goldAccent : "rgba(255,255,255,0.03)",
-                     borderRadius: "12px", width: "56px", border: `1px solid ${goldAccent}33`,
-                     color: isFavorite(topic) ? "#000" : goldAccent, cursor: "pointer",
-                     fontSize: "20px", transition: "all 0.3s"
-                   }}
-                 >
-                   {isFavorite(topic) ? "★" : "☆"}
-                 </button>
-               </div>
-             </div>
+        {view === "app" ? (
+          <>
+            {/* API Key Panel */}
+            <fieldset style={{
+              ...raised,
+              padding: "8px 12px 12px",
+              marginBottom: "8px",
+              border: "2px solid",
+              borderColor: `${W.hilight} ${W.dkShadow} ${W.dkShadow} ${W.hilight}`,
+              background: W.face,
+            }}>
+              <legend style={{
+                fontFamily: "Tahoma, Arial, sans-serif",
+                fontSize: "11px",
+                fontWeight: "bold",
+                padding: "0 4px",
+                background: W.face,
+              }}>Configuración de API</legend>
 
-             <button
-               onClick={() => setShowContent(!showContent)}
-               style={{
-                 width: "100%", background: "none", border: `1px dashed ${goldAccent}33`,
-                 padding: "16px", borderRadius: "12px", color: "#8a7a6a",
-                 fontFamily: "'JetBrains Mono', monospace", fontSize: "10px",
-                 cursor: "pointer", display: "flex", alignItems: "center", gap: "12px",
-                 transition: "all 0.3s"
-               }}
-               onMouseOver={e => e.currentTarget.style.borderColor = goldAccent}
-               onMouseOut={e => e.currentTarget.style.borderColor = goldAccent + '33'}
-             >
-               <span style={{ transform: showContent ? "rotate(90deg)" : "none", transition: "0.3s" }}>▶</span>
-               {showContent ? "RESUMIR ÁREA DE TRABAJO" : "EXPANDIR FUENTES DE DATOS (OPCIONAL)"}
-             </button>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <label htmlFor="apiKey" style={{ whiteSpace: "nowrap", fontSize: "11px" }}>
+                  API Key de Gemini:
+                </label>
+                <div style={{ flex: 1, position: "relative" }}>
+                  <input
+                    id="apiKey"
+                    type={showKey ? "text" : "password"}
+                    value={apiKey}
+                    onChange={e => setApiKey(e.target.value)}
+                    placeholder="Ingresa tu Gemini API Key..."
+                    style={{
+                      ...sunken,
+                      width: "100%",
+                      padding: "2px 28px 2px 4px",
+                      fontSize: "11px",
+                      background: "#fff",
+                      color: "#000",
+                    }}
+                  />
+                  <button
+                    onClick={() => setShowKey(!showKey)}
+                    title={showKey ? "Ocultar" : "Mostrar"}
+                    style={{
+                      position: "absolute", right: "2px", top: "50%", transform: "translateY(-50%)",
+                      ...winBtn,
+                      padding: "1px 6px",
+                      fontSize: "10px",
+                      minHeight: "18px",
+                      border: "1px solid #808080",
+                    }}
+                  >{showKey ? "◈" : "◇"}</button>
+                </div>
+              </div>
+            </fieldset>
 
-             {showContent && (
-               <textarea
-                 value={content}
-                 onChange={e => setContent(e.target.value)}
-                 placeholder="Vuelca tus apuntes, transcripciones o fragmentos de lectura aquí..."
-                 rows={10}
-                 style={{
-                   width: "100%", background: "rgba(0,0,0,0.35)", padding: "20px",
-                   borderRadius: "12px", border: "1px solid", color: "#a89a7a",
-                   marginTop: "16px", fontFamily: "'Inter', sans-serif", fontSize: "13px",
-                   lineHeight: "1.8", animation: "reveal 0.4s ease-out"
-                 }}
-               />
-             )}
-          </section>
+            {/* Topic & Content Panel */}
+            <fieldset style={{
+              ...raised,
+              padding: "8px 12px 12px",
+              marginBottom: "8px",
+              border: "2px solid",
+              borderColor: `${W.hilight} ${W.dkShadow} ${W.dkShadow} ${W.hilight}`,
+              background: W.face,
+            }}>
+              <legend style={{
+                fontFamily: "Tahoma, Arial, sans-serif",
+                fontSize: "11px",
+                fontWeight: "bold",
+                padding: "0 4px",
+                background: W.face,
+              }}>Tema de Investigación</legend>
 
-          {/* Nav Tabs */}
-          <div role="tablist" style={{ display: "flex", gap: "10px", padding: "0 10px" }}>
-            {LEVEL_GROUPS.map((g, i) => (
+              <div style={{ marginBottom: "8px" }}>
+                <label htmlFor="topic" style={{ display: "block", marginBottom: "3px", fontSize: "11px" }}>
+                  Tema:
+                </label>
+                <div style={{ display: "flex", gap: "4px" }}>
+                  <input
+                    id="topic"
+                    value={topic}
+                    onChange={e => setTopic(e.target.value)}
+                    placeholder="ej: Mecánica Cuántica..."
+                    style={{
+                      ...sunken,
+                      flex: 1,
+                      padding: "2px 4px",
+                      fontSize: "11px",
+                      background: "#fff",
+                      color: "#000",
+                    }}
+                  />
+                  <button
+                    onClick={() => topic && (isFavorite(topic) ? removeFavorite(favorites.find(f => f.topic === topic)?.id) : addFavorite(topic, content))}
+                    title={isFavorite(topic) ? "Quitar de favoritos" : "Añadir a favoritos"}
+                    style={{
+                      ...winBtn,
+                      background: isFavorite(topic) ? "#ffffc0" : W.face,
+                      padding: "2px 10px",
+                    }}
+                  >
+                    {isFavorite(topic) ? "★" : "☆"}
+                  </button>
+                </div>
+              </div>
+
               <button
-                key={i}
-                aria-selected={activeGroup === i}
-                onClick={() => setActiveGroup(i)}
+                onClick={() => setShowContent(!showContent)}
                 style={{
-                  flex: 1, padding: "16px 8px", background: activeGroup === i ? "rgba(212,175,55,0.06)" : "transparent",
-                  border: "none", borderBottom: `3px solid ${activeGroup === i ? goldAccent : "transparent"}`,
-                  color: activeGroup === i ? "#f0e6d2" : "#5a4a3a", cursor: "pointer",
-                  fontFamily: "'JetBrains Mono', monospace", fontSize: "9px",
-                  letterSpacing: "0.15em", transition: "0.4s"
+                  ...winBtn,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  marginBottom: showContent ? "6px" : "0",
                 }}
               >
-                {g.label.toUpperCase()}
+                <span style={{
+                  display: "inline-block",
+                  width: "9px", height: "9px",
+                  border: "1px solid #808080",
+                  background: "#fff",
+                  textAlign: "center",
+                  lineHeight: "7px",
+                  fontSize: "9px",
+                  flexShrink: 0,
+                }}>
+                  {showContent ? "−" : "+"}
+                </span>
+                {showContent ? "Ocultar Fuentes de Datos" : "Expandir Fuentes de Datos (Opcional)"}
               </button>
-            ))}
-          </div>
 
-          {/* Action List */}
-          <div style={{ 
-            background: "rgba(10,10,10,0.4)", border: "1px solid rgba(212,175,55,0.08)",
-            borderRadius: "0 0 24px 24px", padding: "24px 20px 40px", marginBottom: "40px"
-          }}>
-            <h5 style={{ 
-               fontFamily: "'JetBrains Mono', monospace", fontSize: "8px", color: goldAccent,
-               opacity: 0.5, letterSpacing: "0.3em", marginBottom: "24px"
-            }}>PROTOCOLOS DISPONIBLES : {groupActions.length}</h5>
-            
-            {groupActions.map((a, i) => (
-              <ActionCard 
-                key={a.id} action={a} topic={topic} content={content} apiKey={apiKey}
-                onGenerate={handleGenerate} onHistoryAdd={addEntry} 
-              />
-            ))}
-          </div>
+              {showContent && (
+                <div>
+                  <label htmlFor="content" style={{ display: "block", marginBottom: "3px", fontSize: "11px" }}>
+                    Contenido / Apuntes:
+                  </label>
+                  <textarea
+                    id="content"
+                    value={content}
+                    onChange={e => setContent(e.target.value)}
+                    placeholder="Vuelca tus apuntes, transcripciones o fragmentos de lectura aquí..."
+                    rows={8}
+                    style={{
+                      ...sunken,
+                      width: "100%",
+                      padding: "4px",
+                      fontSize: "11px",
+                      background: "#fff",
+                      color: "#000",
+                      resize: "vertical",
+                      lineHeight: "1.5",
+                    }}
+                  />
+                </div>
+              )}
+            </fieldset>
+
+            {/* Tab Panel for Actions */}
+            <div>
+              {/* Tab Buttons */}
+              <div role="tablist" style={{ display: "flex", borderBottom: "none", paddingLeft: "4px" }}>
+                {LEVEL_GROUPS.map((g, i) => (
+                  <button
+                    key={i}
+                    role="tab"
+                    aria-selected={activeGroup === i}
+                    onClick={() => setActiveGroup(i)}
+                    className={`win-tab${activeGroup === i ? " active" : ""}`}
+                  >
+                    {g.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Tab Content Panel */}
+              <div style={{
+                ...raised,
+                border: "2px solid",
+                borderColor: `${W.hilight} ${W.dkShadow} ${W.dkShadow} ${W.hilight}`,
+                padding: "10px",
+                background: W.face,
+                marginBottom: "8px",
+              }}>
+                <div style={{
+                  marginBottom: "8px",
+                  padding: "2px 6px",
+                  background: W.selBlue,
+                  color: W.selText,
+                  fontSize: "11px",
+                  fontWeight: "bold",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}>
+                  <span style={{ fontSize: "9px" }}>▶</span>
+                  PROTOCOLOS DISPONIBLES: {groupActions.length}
+                </div>
+
+                {groupActions.map((a) => (
+                  <ActionCard
+                    key={a.id} action={a} topic={topic} content={content} apiKey={apiKey}
+                    onGenerate={handleGenerate} onHistoryAdd={addEntry}
+                  />
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <PromptLibrary />
+        )}
+
+        {/* Status Bar */}
+        <div style={{
+          ...raised,
+          borderTop: `2px solid ${W.dkShadow}`,
+          padding: "2px 8px",
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: "11px",
+          color: "#444",
+        }}>
+          <span>Listo</span>
+          <span>Gemini 1.5 Flash · Iceberg Prompts v3.2</span>
         </div>
-      ) : (
-        <PromptLibrary />
-      )}
-
-      {/* Footer Details */}
-      <footer style={{
-        maxWidth: "680px", margin: "40px auto", textAlign: "center",
-        paddingBottom: "60px", opacity: 0.4
-      }}>
-         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", letterSpacing: "0.1em" }}>
-           ESTÉTICA OBSIDIAN & GOLD · 100/100 LIGHTHOUSE · MAESTRÍA IA
-         </p>
-      </footer>
+      </div>
 
       <HistoryPanel history={history} onClear={clearHistory} />
       <FavoritesPanel favorites={favorites} onRemove={removeFavorite} onRestore={(f) => { setTopic(f.topic); setContent(f.content || ""); }} />
