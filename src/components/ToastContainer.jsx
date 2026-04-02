@@ -1,68 +1,77 @@
 import React from "react";
 
+const W = {
+  face:    "#d4d0c8",
+  shadow:  "#808080",
+  dkShadow:"#404040",
+  hilight: "#ffffff",
+};
+
 export default function ToastContainer({ toasts }) {
   if (toasts.length === 0) return null;
 
-  const getStyles = (type) => {
-    const base = {
-      padding: "12px 16px",
-      borderRadius: "8px",
-      fontFamily: "'DM Mono', monospace",
-      fontSize: "12px",
-      display: "flex",
-      alignItems: "center",
-      gap: "8px",
-      animation: "fadeIn 0.2s ease",
-      cursor: "pointer",
-    };
-
+  const getConfig = (type) => {
     switch (type) {
-      case "success":
-        return {
-          ...base,
-          background: "rgba(52,211,153,0.15)",
-          border: "1px solid rgba(52,211,153,0.3)",
-          color: "#34d399",
-        };
-      case "error":
-        return {
-          ...base,
-          background: "rgba(248,113,113,0.15)",
-          border: "1px solid rgba(248,113,113,0.3)",
-          color: "#f87171",
-        };
-      default:
-        return {
-          ...base,
-          background: "rgba(180,130,40,0.15)",
-          border: "1px solid rgba(180,130,40,0.3)",
-          color: "#f59e0b",
-        };
-    }
-  };
-
-  const getIcon = (type) => {
-    switch (type) {
-      case "success": return "✓";
-      case "error": return "✕";
-      default: return "ℹ";
+      case "success": return { icon: "✓", bg: "#e0ffe0", border: "#008000", color: "#004000", titleBg: "#008000", titleColor: "#fff", title: "Información" };
+      case "error":   return { icon: "✕", bg: "#fff0f0", border: "#cc0000", color: "#800000", titleBg: "#cc0000", titleColor: "#fff", title: "Error" };
+      default:        return { icon: "ℹ", bg: "#ffffd0", border: "#808000", color: "#404000", titleBg: "#000080", titleColor: "#fff", title: "Aviso" };
     }
   };
 
   return (
-    <div style={{ position: "fixed", top: "20px", right: "20px", zIndex: 9999 }}>
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-      {toasts.map(t => (
-        <div key={t.id} style={getStyles(t.type)}>
-          <span>{getIcon(t.type)}</span>
-          <span>{t.message}</span>
-        </div>
-      ))}
+    <div style={{ position: "fixed", top: "16px", right: "16px", zIndex: 9999, display: "flex", flexDirection: "column", gap: "6px" }}>
+      {toasts.map(t => {
+        const cfg = getConfig(t.type);
+        return (
+          <div
+            key={t.id}
+            style={{
+              background: W.face,
+              border: "2px solid",
+              borderColor: `${W.hilight} ${W.dkShadow} ${W.dkShadow} ${W.hilight}`,
+              width: "280px",
+              boxShadow: "4px 4px 8px rgba(0,0,0,0.4)",
+            }}
+          >
+            {/* Title bar */}
+            <div style={{
+              background: `linear-gradient(180deg, ${cfg.titleBg} 0%, ${cfg.titleBg}cc 100%)`,
+              color: cfg.titleColor,
+              padding: "2px 6px",
+              fontSize: "11px",
+              fontFamily: "Tahoma, Arial, sans-serif",
+              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}>
+              <span>{cfg.icon}</span>
+              {cfg.title}
+            </div>
+            {/* Body */}
+            <div style={{
+              padding: "10px 12px",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "10px",
+              background: cfg.bg,
+              borderTop: `2px solid ${W.dkShadow}`,
+            }}>
+              <span style={{ fontSize: "22px", lineHeight: 1, flexShrink: 0 }}>
+                {type === "success" ? "✓" : type === "error" ? "⚠" : "ℹ"}
+              </span>
+              <span style={{
+                fontFamily: "Tahoma, 'MS Sans Serif', Arial, sans-serif",
+                fontSize: "11px",
+                color: cfg.color,
+                lineHeight: "1.5",
+              }}>
+                {t.message}
+              </span>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

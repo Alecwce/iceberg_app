@@ -2,136 +2,204 @@ import React, { useState } from "react";
 import Spinner from "./Spinner";
 import ResultBlock from "./ResultBlock";
 
+const W = {
+  face:    "#d4d0c8",
+  shadow:  "#808080",
+  dkShadow:"#404040",
+  hilight: "#ffffff",
+  btnText: "#000000",
+  selBlue: "#0a246a",
+  selText: "#ffffff",
+  inset:   "#ffffff",
+};
+
+const raised = {
+  background: W.face,
+  border: "2px solid",
+  borderColor: `${W.hilight} ${W.dkShadow} ${W.dkShadow} ${W.hilight}`,
+};
+
+const winBtn = {
+  ...raised,
+  fontFamily: "Tahoma, 'MS Sans Serif', Arial, sans-serif",
+  fontSize: "11px",
+  color: W.btnText,
+  padding: "3px 12px",
+  cursor: "pointer",
+  minHeight: "23px",
+  userSelect: "none",
+  background: W.face,
+};
+
 export default function ActionCard({ action, topic, content, apiKey, onGenerate, onHistoryAdd }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [done, setDone] = useState(false);
+  const [pressed, setPressed] = useState(false);
 
   const handleGenerate = async () => {
     if (!apiKey?.trim()) { setError("Configura tu API Key en la sección superior."); return; }
     if (!topic?.trim()) { setError("Define un tema de investigación primero."); return; }
-    
+
     setLoading(true);
     setError(null);
-    
+
     const output = await onGenerate({ action, topic, content });
-    
+
     if (output) {
       setResult(output);
       setDone(true);
       onHistoryAdd?.(topic, action.id, output);
     } else {
-      setError("Fallo en la comunicación con la consciencia de Gemini.");
+      setError("Fallo en la comunicación con Gemini.");
     }
-    
+
     setLoading(false);
   };
 
-  const accentColor = action.meta.color;
-  const obsidianBG = "rgba(10, 10, 10, 0.85)";
-
   return (
     <div style={{
-      background: open ? "rgba(15, 15, 15, 0.98)" : "rgba(15, 15, 15, 0.4)",
-      backdropFilter: "blur(20px)",
-      border: `1px solid ${open ? accentColor + "55" : "rgba(212, 175, 55, 0.08)"}`,
-      borderRadius: "18px",
-      overflow: "hidden",
-      marginBottom: "12px",
-      transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
-      boxShadow: open ? `0 10px 30px rgba(0,0,0,0.6)` : "none",
-      transform: open ? "scale(1.02)" : "scale(1)",
+      background: W.face,
+      border: "2px solid",
+      borderColor: `${W.hilight} ${W.dkShadow} ${W.dkShadow} ${W.hilight}`,
+      marginBottom: "4px",
     }}>
+      {/* Card Header Row */}
       <button
         onClick={() => setOpen(!open)}
         style={{
-          width: "100%", background: "none", border: "none",
-          padding: "20px 24px", cursor: "pointer",
-          display: "flex", alignItems: "center", gap: "16px", textAlign: "left",
-          transition: "background 0.3s"
+          width: "100%",
+          background: open ? W.selBlue : W.face,
+          border: "none",
+          padding: "4px 8px",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          textAlign: "left",
         }}
-        onMouseOver={e => e.currentTarget.style.background = "rgba(255,255,255,0.02)"}
-        onMouseOut={e => e.currentTarget.style.background = "none"}
       >
-        <div style={{
-          width: "40px", height: "40px", borderRadius: "10px",
+        {/* Expand indicator */}
+        <span style={{
+          width: "9px", height: "9px",
+          border: "1px solid " + (open ? "#aaa" : W.shadow),
+          background: open ? "#c0c0c0" : "#fff",
           display: "flex", alignItems: "center", justifyContent: "center",
-          background: done ? "#10b98122" : accentColor + "11",
-          border: `1px solid ${done ? "#10b98144" : accentColor + "33"}`,
-          color: done ? "#10b981" : accentColor,
-          fontSize: "20px", transition: "all 0.3s"
+          fontSize: "8px", lineHeight: 1, flexShrink: 0,
+          color: "#000",
+        }}>
+          {open ? "−" : "+"}
+        </span>
+
+        {/* Icon */}
+        <span style={{
+          fontSize: "14px",
+          width: "20px",
+          textAlign: "center",
+          flexShrink: 0,
+          filter: open ? "brightness(10)" : "none",
         }}>
           {done ? "✓" : action.meta.icon}
-        </div>
-        
+        </span>
+
+        {/* Title & subtitle */}
         <div style={{ flex: 1 }}>
-          <h4 style={{
-            fontFamily: "'JetBrains Mono', monospace", fontSize: "13px",
-            color: done ? "#10b981" : "#f0e6d2", fontWeight: "700", 
-            letterSpacing: "0.02em", margin: 0
-          }}>{action.ui.title}</h4>
-          <p style={{ 
-            fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240, 230, 210, 0.4)", 
-            marginTop: "4px", fontWeight: "300" 
+          <div style={{
+            fontFamily: "Tahoma, 'MS Sans Serif', Arial, sans-serif",
+            fontSize: "11px",
+            fontWeight: open ? "bold" : "normal",
+            color: open ? W.selText : (done ? "#006600" : W.btnText),
+          }}>
+            {action.ui.title}
+            {done && !open && (
+              <span style={{ color: "#006600", marginLeft: "6px", fontWeight: "bold" }}>✓ Completado</span>
+            )}
+          </div>
+          <div style={{
+            fontFamily: "Tahoma, 'MS Sans Serif', Arial, sans-serif",
+            fontSize: "10px",
+            color: open ? "rgba(255,255,255,0.75)" : W.shadow,
+            marginTop: "1px",
           }}>
             {action.ui.when}
-          </p>
+          </div>
         </div>
 
-        <div style={{
-          width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center",
-          color: "rgba(212, 175, 55, 0.3)", transform: open ? "rotate(180deg)" : "none",
-          transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)"
-        }}>▾</div>
+        <span style={{
+          color: open ? "rgba(255,255,255,0.6)" : W.shadow,
+          fontSize: "9px",
+          flexShrink: 0,
+          transform: open ? "rotate(180deg)" : "none",
+        }}>▼</span>
       </button>
 
       {open && (
-        <div style={{ padding: "0 24px 24px", animation: "reveal 0.4s ease-out" }}>
-          <p style={{
-            fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "rgba(240, 230, 210, 0.7)",
-            margin: "0 0 20px", lineHeight: "1.6", fontWeight: "300"
-          }}>{action.ui.desc}</p>
+        <div style={{ padding: "8px 12px 12px" }}>
+          {/* Description in sunken box */}
+          <div style={{
+            background: "#fff",
+            border: "2px solid",
+            borderColor: `${W.dkShadow} ${W.hilight} ${W.hilight} ${W.dkShadow}`,
+            padding: "6px 8px",
+            fontSize: "11px",
+            fontFamily: "Tahoma, Arial, sans-serif",
+            color: "#000",
+            lineHeight: "1.5",
+            marginBottom: "8px",
+          }}>
+            {action.ui.desc}
+          </div>
 
-          <button
-            onClick={handleGenerate}
-            disabled={loading}
-            style={{
-              width: "100%",
-              background: loading 
-                ? "rgba(212, 175, 55, 0.05)" 
-                : `linear-gradient(135deg, ${accentColor}11, ${accentColor}05)`,
-              border: `1px solid ${accentColor}44`,
-              color: loading ? "rgba(212, 175, 55, 0.3)" : accentColor,
-              padding: "16px",
-              borderRadius: "12px",
-              cursor: loading ? "not-allowed" : "pointer",
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "11px",
-              letterSpacing: "0.2em",
-              fontWeight: "700",
-              transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-              boxShadow: `0 4px 15px rgba(0,0,0,0.2)`
-            }}
-            onMouseOver={e => !loading && (e.currentTarget.style.boxShadow = `0 0 20px ${accentColor}22`, e.currentTarget.style.borderColor = accentColor)}
-            onMouseOut={e => !loading && (e.currentTarget.style.boxShadow = "none", e.currentTarget.style.borderColor = accentColor + "44")}
-          >
-            {loading ? "PROCESANDO PENSAMIENTO..." : result ? "↺ RE-INICIAR PROTOCOLO" : "⚡ EJECUTAR PROTOCOLO IA"}
-          </button>
+          {/* Generate button */}
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "4px" }}>
+            <button
+              onClick={handleGenerate}
+              disabled={loading}
+              onMouseDown={() => setPressed(true)}
+              onMouseUp={() => setPressed(false)}
+              onMouseLeave={() => setPressed(false)}
+              style={{
+                ...winBtn,
+                padding: "4px 20px",
+                fontWeight: "bold",
+                border: loading ? "2px inset #808080" : (pressed ? "2px solid" : "2px solid"),
+                borderColor: loading
+                  ? "#808080"
+                  : (pressed
+                    ? `${W.dkShadow} ${W.hilight} ${W.hilight} ${W.dkShadow}`
+                    : `${W.hilight} ${W.dkShadow} ${W.dkShadow} ${W.hilight}`),
+                cursor: loading ? "default" : "pointer",
+                opacity: loading ? 0.7 : 1,
+              }}
+            >
+              {loading ? "Procesando..." : result ? "↺ Reiniciar" : "⚡ Ejecutar Protocolo IA"}
+            </button>
+          </div>
 
-          {loading && <div style={{ marginTop: "20px" }}><Spinner color={accentColor} /></div>}
-          
+          {loading && <div style={{ marginTop: "8px" }}><Spinner /></div>}
+
           {error && (
             <div style={{
-              marginTop: "16px", padding: "14px 18px",
-              background: "rgba(239, 68, 68, 0.05)", border: "1px solid rgba(239, 68, 68, 0.2)",
-              borderRadius: "10px", fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "11px", color: "#ef4444", animation: "reveal 0.3s ease-out"
-            }}>⚠ {error}</div>
+              marginTop: "8px",
+              padding: "6px 10px",
+              background: "#fff0f0",
+              border: "2px solid",
+              borderColor: `${W.dkShadow} ${W.hilight} ${W.hilight} ${W.dkShadow}`,
+              fontFamily: "Tahoma, Arial, sans-serif",
+              fontSize: "11px",
+              color: "#cc0000",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}>
+              <span style={{ fontSize: "16px" }}>⚠</span>
+              {error}
+            </div>
           )}
-          
-          {result && <ResultBlock text={result} color={accentColor} topic={topic} />}
+
+          {result && <ResultBlock text={result} color={action.meta.color} topic={topic} />}
         </div>
       )}
     </div>
